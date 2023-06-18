@@ -33,6 +33,10 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
+import { ElNotification } from 'element-plus'
+import { login } from '~/api/manager'
+import { useRouter } from "vue-router";
+
 // do not use same name with ref
 const form = reactive({
   username: '',
@@ -50,14 +54,33 @@ const rules = reactive({
   ]
 })
 
+const router = useRouter()
+
 const onSubmit = async (formEl) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
-    if (valid) {
-      console.log('submit')
-    } else {
-      console.log('error submit', fields)
+    if (!valid) {
+      return false
     }
+    login(form.username, form.password)
+      .then(res => {
+        console.log(res.data.data)
+        ElNotification.success({
+          message: '登录成功',
+          offset: 100,
+          duration: 3000,
+          type: 'success'
+        })
+        router.push("/")
+      })
+      .catch(err => {
+        ElNotification({
+          message: err.response.data.msg || '请求失败',
+          offset: 100,
+          duration: 3000,
+          type: 'error',
+        })
+      })
   })
 }
 </script>
