@@ -15,15 +15,15 @@
         <span>账号密码登录</span>
         <span class="line"></span>
       </div>
-      <el-form :model="form" class="w-[250px]">
-        <el-form-item>
-          <el-input :prefix-icon="User" v-model="form.username" placeholder="请输入用户名"/>
+      <el-form ref="ruleFormRef" :rules="rules" :model="form" class="w-[250px]">
+        <el-form-item prop="username">
+          <el-input :prefix-icon="User" v-model="form.username" placeholder="请输入用户名" />
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input :prefix-icon="Lock" type="password" v-model="form.password" show-password placeholder="请输入密码" />
         </el-form-item>
         <el-form-item>
-          <el-input :prefix-icon="Lock" v-model="form.password" show-password placeholder="请输入密码"/>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" round color="#626aef" class="w-[250px]" @click="onSubmit">登 录</el-button>
+          <el-button type="primary" round color="#626aef" class="w-[250px]" @click="onSubmit(ruleFormRef)">登 录</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -31,18 +31,35 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import {User, Lock} from '@element-plus/icons-vue'
+import { ref, reactive } from 'vue'
+import { User, Lock } from '@element-plus/icons-vue'
 // do not use same name with ref
 const form = reactive({
   username: '',
   password: '',
 })
 
-const onSubmit = () => {
-  console.log('submit!')
-}
+const ruleFormRef = ref()
 
+const rules = reactive({
+  username: [
+    { required: true, message: '用户名不能为空', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '密码不能为空', trigger: 'blur' }
+  ]
+})
+
+const onSubmit = async (formEl) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      console.log('submit')
+    } else {
+      console.log('error submit', fields)
+    }
+  })
+}
 </script>
 
 <style scoped>
@@ -50,7 +67,8 @@ const onSubmit = () => {
   @apply min-h-screen bg-indigo-500;
 }
 
-.login-container .left, .login-container .right {
+.login-container .left,
+.login-container .right {
   @apply flex justify-center items-center;
 }
 
