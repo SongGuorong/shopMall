@@ -56,7 +56,6 @@ const rules = reactive({
 })
 
 const router = useRouter()
-const cookies = useCookies()
 
 const onSubmit = async (formEl) => {
   if (!formEl) return
@@ -66,22 +65,15 @@ const onSubmit = async (formEl) => {
     }
     login(form.username, form.password)
       .then(res => {
-        cookies.set('admin-token', res.data.data.token)
         ElNotification.success({
           message: '登录成功',
           offset: 100,
           duration: 3000,
           type: 'success'
         })
+        const cookies = useCookies()
+        cookies.set('admin-token', res.token)
         router.push("/")
-      })
-      .catch(err => {
-        ElNotification({
-          message: err.response.data.msg || '请求失败',
-          offset: 100,
-          duration: 3000,
-          type: 'error',
-        })
       })
   })
 }
