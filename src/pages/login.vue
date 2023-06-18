@@ -36,6 +36,7 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
 import { login } from '~/api/manager'
 import { useRouter } from "vue-router";
+import { useCookies } from "@vueuse/integrations/useCookies";
 
 // do not use same name with ref
 const form = reactive({
@@ -55,6 +56,7 @@ const rules = reactive({
 })
 
 const router = useRouter()
+const cookies = useCookies()
 
 const onSubmit = async (formEl) => {
   if (!formEl) return
@@ -64,7 +66,7 @@ const onSubmit = async (formEl) => {
     }
     login(form.username, form.password)
       .then(res => {
-        console.log(res.data.data)
+        cookies.set('admin-token', res.data.data.token)
         ElNotification.success({
           message: '登录成功',
           offset: 100,

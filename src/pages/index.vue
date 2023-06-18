@@ -2,27 +2,22 @@
     <div>
         后台首页
     </div>
-    <el-button @click="add"> {{ count }} </el-button>
-    <el-button type="primary" @click="increase"> {{ form.count }} </el-button>
-    <NotFound />
+    <el-button type="primary" @click="get">get</el-button>
+    <el-button type="primary" @click="remove">remove</el-button>
 </template>
 
 <script setup>
-import NotFound from '~/pages/404.vue'
-import {reactive, ref} from 'vue'
+import { reactive, ref } from 'vue'
+import { useCookies } from "@vueuse/integrations/useCookies"
 
-const count = ref(0)
+const cookies = useCookies()
 
-function add() {
-    count.value++
+function get() {
+    console.log(cookies.get('admin-token'))
 }
 
-const form = reactive({
-    count: 0
-})
-
-function increase() {
-    form.count++
+function remove() {
+    cookies.remove('admin-token')
 }
 
 </script>
