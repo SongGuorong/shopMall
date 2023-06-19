@@ -34,9 +34,10 @@
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
-import { login } from '~/api/manager'
+import { login, getInfo } from '~/api/manager'
 import { useRouter } from "vue-router";
 import { useCookies } from "@vueuse/integrations/useCookies";
+import { getFixedColumnOffset } from 'element-plus/es/components/table/src/util';
 
 // do not use same name with ref
 const form = reactive({
@@ -67,12 +68,20 @@ const onSubmit = async (formEl) => {
       .then(res => {
         ElNotification.success({
           message: '登录成功',
-          offset: 100,
+          offset: 20,
           duration: 3000,
           type: 'success'
         })
+        // 存储cookie
         const cookies = useCookies()
         cookies.set('admin-token', res.token)
+
+        // 获取用户权限信息
+        getInfo().then(info => {
+          console.log(info)
+        })
+
+        // 登陆跳转
         router.push("/")
       })
   })
