@@ -23,7 +23,7 @@
           <el-input :prefix-icon="Lock" type="password" v-model="form.password" show-password placeholder="请输入密码" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" round color="#626aef" class="w-[250px]" @click="onSubmit(ruleFormRef)">登 录</el-button>
+          <el-button type="primary" round color="#626aef" class="w-[250px]" @click="onSubmit(ruleFormRef)" :loading="loading">登 录</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -34,9 +34,9 @@
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
-import { login } from '~/api/manager'
+import { login, getInfo } from '~/api/manager'
 import { useRouter } from "vue-router";
-import { useCookies } from "@vueuse/integrations/useCookies";
+import { useCookies } from "@vueuse/integrations/useCookies"
 
 // do not use same name with ref
 const form = reactive({
@@ -45,6 +45,8 @@ const form = reactive({
 })
 
 const ruleFormRef = ref()
+// 设置loading状态
+const loading = ref(false)
 
 const rules = reactive({
   username: [
@@ -56,7 +58,6 @@ const rules = reactive({
 })
 
 const router = useRouter()
-const cookies = useCookies()
 
 const onSubmit = async (formEl) => {
   if (!formEl) return
@@ -64,24 +65,29 @@ const onSubmit = async (formEl) => {
     if (!valid) {
       return false
     }
+    loading.value = true
     login(form.username, form.password)
       .then(res => {
-        cookies.set('admin-token', res.data.data.token)
         ElNotification.success({
           message: '登录成功',
-          offset: 100,
+          offset: 20,
           duration: 3000,
           type: 'success'
         })
+        // 存储cookie
+        const cookies = useCookies()
+        cookies.set('admin-token', res.token)
+
+        // 获取用户权限信息
+        getInfo().then(info => {
+          console.log(info)
+        })
+
+        // 登陆跳转
         router.push("/")
       })
-      .catch(err => {
-        ElNotification({
-          message: err.response.data.msg || '请求失败',
-          offset: 100,
-          duration: 3000,
-          type: 'error',
-        })
+      .finally(() => {
+        loading.value = false
       })
   })
 }
