@@ -23,7 +23,7 @@
           <el-input :prefix-icon="Lock" type="password" v-model="form.password" show-password placeholder="请输入密码" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" round color="#626aef" class="w-[250px]" @click="onSubmit(ruleFormRef)">登 录</el-button>
+          <el-button type="primary" round color="#626aef" class="w-[250px]" @click="onSubmit(ruleFormRef)" :loading="loading">登 录</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -36,8 +36,7 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { ElNotification } from 'element-plus'
 import { login, getInfo } from '~/api/manager'
 import { useRouter } from "vue-router";
-import { useCookies } from "@vueuse/integrations/useCookies";
-import { getFixedColumnOffset } from 'element-plus/es/components/table/src/util';
+import { useCookies } from "@vueuse/integrations/useCookies"
 
 // do not use same name with ref
 const form = reactive({
@@ -46,6 +45,8 @@ const form = reactive({
 })
 
 const ruleFormRef = ref()
+// 设置loading状态
+const loading = ref(false)
 
 const rules = reactive({
   username: [
@@ -64,6 +65,7 @@ const onSubmit = async (formEl) => {
     if (!valid) {
       return false
     }
+    loading.value = true
     login(form.username, form.password)
       .then(res => {
         ElNotification.success({
@@ -83,6 +85,9 @@ const onSubmit = async (formEl) => {
 
         // 登陆跳转
         router.push("/")
+      })
+      .finally(() => {
+        loading.value = false
       })
   })
 }
