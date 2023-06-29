@@ -7,16 +7,14 @@
 </template>
 
 <script setup>
-import { useCookies } from "@vueuse/integrations/useCookies"
-
-const cookies = useCookies()
+import { getToken, removeToken } from '~/composables/auth'
 
 function get() {
-    console.log(cookies.get('admin-token'))
+    console.log(getToken())
 }
 
 function remove() {
-    cookies.remove('admin-token')
+    removeToken()
 }
 
 </script>

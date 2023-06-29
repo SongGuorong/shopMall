@@ -33,10 +33,10 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
-import { ElNotification } from 'element-plus'
 import { login, getInfo } from '~/api/manager'
 import { useRouter } from "vue-router";
-import { useCookies } from "@vueuse/integrations/useCookies"
+import { setToken } from '~/composables/auth'
+import { toast } from "~/composables/toast";
 
 // do not use same name with ref
 const form = reactive({
@@ -68,15 +68,11 @@ const onSubmit = async (formEl) => {
     loading.value = true
     login(form.username, form.password)
       .then(res => {
-        ElNotification.success({
-          message: '登录成功',
-          offset: 20,
-          duration: 3000,
-          type: 'success'
-        })
+        
+        toast('登录成功')
+
         // 存储cookie
-        const cookies = useCookies()
-        cookies.set('admin-token', res.token)
+        setToken(res.token)
 
         // 获取用户权限信息
         getInfo().then(info => {
