@@ -2,19 +2,14 @@
     <div>
         后台首页
     </div>
-    <el-button type="primary" @click="get">get</el-button>
-    <el-button type="primary" @click="remove">remove</el-button>
+    
+    用户信息: {{ userInfoStore.user }}
+
 </template>
 
 <script setup>
-import { getToken, removeToken } from '~/composables/auth'
+import { useUserInfoStore } from '~/store/index'
 
-function get() {
-    console.log(getToken())
-}
-
-function remove() {
-    removeToken()
-}
+const userInfoStore = useUserInfoStore()
 
 </script>

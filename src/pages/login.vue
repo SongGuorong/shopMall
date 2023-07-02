@@ -34,9 +34,10 @@
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import { login, getInfo } from '~/api/manager'
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router"
 import { setToken } from '~/composables/auth'
-import { toast } from "~/composables/toast";
+import { toast } from "~/composables/toast"
+import { useUserInfoStore } from '~/store/index'
 
 // do not use same name with ref
 const form = reactive({
@@ -59,6 +60,8 @@ const rules = reactive({
 
 const router = useRouter()
 
+const userInfoStore = useUserInfoStore()
+
 const onSubmit = async (formEl) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
@@ -76,6 +79,7 @@ const onSubmit = async (formEl) => {
 
         // 获取用户权限信息
         getInfo().then(info => {
+          userInfoStore.setUserInfo(info)
           console.log(info)
         })
 
