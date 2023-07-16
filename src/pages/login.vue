@@ -33,9 +33,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
-import { login, getInfo } from '~/api/manager'
 import { useRouter } from "vue-router"
-import { setToken } from '~/composables/auth'
 import { toast } from "~/composables/toast"
 import { useUserInfoStore } from '~/store/index'
 
@@ -59,7 +57,6 @@ const rules = reactive({
 })
 
 const router = useRouter()
-
 const userInfoStore = useUserInfoStore()
 
 const onSubmit = async (formEl) => {
@@ -69,26 +66,11 @@ const onSubmit = async (formEl) => {
       return false
     }
     loading.value = true
-    login(form.username, form.password)
-      .then(res => {
-        
-        toast('登录成功')
-
-        // 存储cookie
-        setToken(res.token)
-
-        // 获取用户权限信息
-        getInfo().then(info => {
-          userInfoStore.setUserInfo(info)
-          console.log(info)
-        })
-
-        // 登陆跳转
-        router.push("/")
-      })
-      .finally(() => {
-        loading.value = false
-      })
+    userInfoStore.login(form).then(() => {
+      toast('登录成功')
+      // 登陆跳转
+      router.push("/")
+    }).finally(() => loading.value = false)
   })
 }
 </script>
