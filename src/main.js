@@ -12,6 +12,7 @@ import { createPinia } from 'pinia'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // App.vue
 import App from './App.vue'
+import './permission'
 
 const app = createApp(App)
 const pinia = createPinia()
